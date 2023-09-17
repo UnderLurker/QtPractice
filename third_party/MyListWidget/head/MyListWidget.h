@@ -25,13 +25,11 @@ struct StudentItem{
     QString name;
     int age{};
     QString sex;
-    int no{};
     StudentItem() = default;
-    StudentItem(QString  _n,const int& _a,QString  _s,int _no)
+    StudentItem(QString  _n,const int& _a,QString  _s)
         :name(std::move(_n)),
         age(_a),
-        sex(std::move(_s)),
-        no(_no){}
+        sex(std::move(_s)){}
 };
 
 Q_DECLARE_METATYPE(StudentItem)
@@ -41,7 +39,13 @@ class MyListWidgetItemDelegate : public QStyledItemDelegate{
 public:
     explicit MyListWidgetItemDelegate(QWidget* _p = nullptr);
     ~MyListWidgetItemDelegate() override;
+    QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
+    bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
+private:
+    QPoint _mouse_pos;
+signals:
+    void selected(int index);
 };
 
 #endif //!CLIONWIDGET_MYLISTWIDGET_H

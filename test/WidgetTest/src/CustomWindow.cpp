@@ -13,9 +13,9 @@ CustomWindow::CustomWindow(QWidget* _p)
     auto item1 = new QListWidgetItem;
     auto item2 = new QListWidgetItem;
     auto item3 = new QListWidgetItem;
-    StudentItem s1(tr("cxn"),24,tr("mole"),1);
-    StudentItem s2(tr("cxn"),24,tr("mole"),2);
-    StudentItem s3(tr("cxn"),24,tr("mole"),3);
+    StudentItem s1(tr("cxn"),24,tr("mole"));
+    StudentItem s2(tr("cxn"),24,tr("mole"));
+    StudentItem s3(tr("cxn"),24,tr("mole"));
     item1->setData(Role::StudentRole,QVariant::fromValue(s1));
     item2->setData(Role::StudentRole,QVariant::fromValue(s2));
     item3->setData(Role::StudentRole,QVariant::fromValue(s3));
