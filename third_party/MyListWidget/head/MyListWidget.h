@@ -25,6 +25,7 @@ struct StudentItem{
     QString name;
     int age{};
     QString sex;
+    QStyle::State selected{65537};
     StudentItem() = default;
     StudentItem(QString  _n,const int& _a,QString  _s)
         :name(std::move(_n)),
@@ -43,9 +44,7 @@ public:
     void paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const override;
     bool editorEvent(QEvent *event, QAbstractItemModel *model, const QStyleOptionViewItem &option, const QModelIndex &index) override;
 private:
-    QPoint _mouse_pos;
-signals:
-    void selected(int index);
+    int curRow{-1};
 };
 
 #endif //!CLIONWIDGET_MYLISTWIDGET_H
