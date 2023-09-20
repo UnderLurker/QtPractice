@@ -80,16 +80,16 @@ bool MyListWidgetItemDelegate::editorEvent(QEvent *event, QAbstractItemModel *mo
             model->setData(index,QVariant::fromValue(item),Role::StudentRole);
             return true;
         }
-        case QEvent::Enter:{
-            item.selected |= QStyle::State_MouseOver;
-            model->setData(index,QVariant::fromValue(item),Role::StudentRole);
-            break;
-        }
-        case QEvent::Leave:{
-            item.selected = (QStyle::State)((int)item.selected & ~(int)QStyle::State_MouseOver);
-            model->setData(index,QVariant::fromValue(item),Role::StudentRole);
-            break;
-        }
+//        case QEvent::Enter:{
+//            item.selected |= QStyle::State_MouseOver;
+//            model->setData(index,QVariant::fromValue(item),Role::StudentRole);
+//            break;
+//        }
+//        case QEvent::Leave:{
+//            item.selected = (QStyle::State)((int)item.selected & ~(int)QStyle::State_MouseOver);
+//            model->setData(index,QVariant::fromValue(item),Role::StudentRole);
+//            break;
+//        }
         default:
             break;
     }

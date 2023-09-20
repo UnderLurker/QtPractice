@@ -7,12 +7,21 @@
 
 #include <QWidget>
 #include <QObject>
+#include <QBoxLayout>
+#include <QMenuBar>
 
 class CustomWindow : public QWidget{
     Q_OBJECT
 public:
     explicit CustomWindow(QWidget* _p = nullptr);
     ~CustomWindow();
+private:
+    QBoxLayout *hlayout;
+    QWidget *menuWight;
+    QMenuBar *menubar;
+
+public slots:
+    void changeSpacing(int val);
 };
 
 

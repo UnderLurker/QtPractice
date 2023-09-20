@@ -7,12 +7,14 @@ set(HEAD_FILES
 )
 aux_source_directory(${SRC_PATH} SOURCE_FILES)
 
-include_directories(${HEAD_PATH})
+#include_directories(${HEAD_PATH})
 
 
 add_library(MyListWidget_static STATIC ${SOURCE_FILES} ${HEAD_FILES})
-target_link_libraries(MyListWidget_static
+target_link_libraries(MyListWidget_static PUBLIC
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets
 )
+target_include_directories(MyListWidget_static PRIVATE
+        ${HEAD_PATH})

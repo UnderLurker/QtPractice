@@ -9,7 +9,7 @@ aux_source_directory(${SRC_PATH} SOURCE_FILES)
 
 
 include_directories(${HEAD_PATH})
-include_directories(${THIRD_PARTY}/MyListWidget/head)
+#include_directories(${THIRD_PARTY}/MyListWidget/head)
 
 add_subdirectory(${THIRD_PARTY}/MyListWidget MyListWidget_static.dir)
 
@@ -19,6 +19,9 @@ target_link_libraries(WidgetTest
         Qt5::Gui
         Qt5::Widgets
         MyListWidget_static
+)
+target_include_directories(WidgetTest PUBLIC
+        ${THIRD_PARTY}/MyListWidget/head
 )
 
 add_test(WidgetTest WidgetTest)
