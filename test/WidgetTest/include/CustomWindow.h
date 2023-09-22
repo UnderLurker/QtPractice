@@ -7,21 +7,20 @@
 
 #include <QWidget>
 #include <QObject>
-#include <QBoxLayout>
+#include <QMainWindow>
 #include <QMenuBar>
+#include "MyBar.h"
 
-class CustomWindow : public QWidget{
+class CustomWindow : public QMainWindow{
     Q_OBJECT
 public:
     explicit CustomWindow(QWidget* _p = nullptr);
-    ~CustomWindow();
+    ~CustomWindow() override;
+    void openFile(bool checked);
 private:
-    QBoxLayout *hlayout;
-    QWidget *menuWight;
-    QMenuBar *menubar;
-
-public slots:
-    void changeSpacing(int val);
+    MyMenuBar *menubar;
+    MyStatusBar *statusbar;
+    MyPlainTextEdit *textEdit;
 };
 
 

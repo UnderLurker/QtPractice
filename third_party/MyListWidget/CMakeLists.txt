@@ -2,13 +2,10 @@ cmake_minimum_required(VERSION 3.26)
 project(MyListWidget VERSION 0.1.0)
 set(HEAD_PATH ${PROJECT_SOURCE_DIR}/head)
 set(SRC_PATH ${PROJECT_SOURCE_DIR}/src)
-set(HEAD_FILES
-        ${HEAD_PATH}/MyListWidget.h
-)
-aux_source_directory(${SRC_PATH} SOURCE_FILES)
+file(GLOB HEAD_FILES ${HEAD_PATH}/*.h)
+file(GLOB SOURCE_FILES ${SRC_PATH}/*.cpp)
 
-#include_directories(${HEAD_PATH})
-
+message(NOTICE "widget ${SOURCE_FILES} ${HEAD_FILES}")
 
 add_library(MyListWidget_static STATIC ${SOURCE_FILES} ${HEAD_FILES})
 target_link_libraries(MyListWidget_static PUBLIC

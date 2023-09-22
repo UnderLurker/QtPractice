@@ -9,19 +9,21 @@ aux_source_directory(${SRC_PATH} SOURCE_FILES)
 
 
 include_directories(${HEAD_PATH})
-#include_directories(${THIRD_PARTY}/MyListWidget/head)
 
 add_subdirectory(${THIRD_PARTY}/MyListWidget MyListWidget_static.dir)
+add_subdirectory(${THIRD_PARTY}/MyBar MyBar_static.dir)
 
 add_executable(WidgetTest ${SOURCE_FILES} ${HEAD_FILES})
-target_link_libraries(WidgetTest
+target_link_libraries(WidgetTest PUBLIC
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets
         MyListWidget_static
+        MyBar_static
 )
 target_include_directories(WidgetTest PUBLIC
         ${THIRD_PARTY}/MyListWidget/head
+        ${THIRD_PARTY}/MyBar/head
 )
 
 add_test(WidgetTest WidgetTest)
