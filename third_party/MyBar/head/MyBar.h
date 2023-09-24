@@ -29,6 +29,12 @@ class MyPlainTextEdit : public QPlainTextEdit{
 public:
     explicit MyPlainTextEdit(QWidget *parent = nullptr);
     ~MyPlainTextEdit() override = default;
+
+    void contextMenuEvent(QContextMenuEvent *e) override;
+
+    void copyContent(bool checked);
+private:
+    QMenu *rightMenu;
 };
 
 #endif //CLIONWIDGET_MYBAR_H

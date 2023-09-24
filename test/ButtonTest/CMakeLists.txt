@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.26)
-project(WidgetTest VERSION 0.1.0)
+project(ButtonTest VERSION 0.1.0)
 set(HEAD_PATH ${PROJECT_SOURCE_DIR}/include)
 set(SRC_PATH ${PROJECT_SOURCE_DIR}/src)
 set(HEAD_FILES
@@ -14,8 +14,8 @@ add_subdirectory(${THIRD_PARTY}/MyListWidget MyListWidget_static.dir)
 add_subdirectory(${THIRD_PARTY}/MyBar MyBar_static.dir)
 add_subdirectory(${THIRD_PARTY}/MyButton MyButton_static.dir)
 
-add_executable(WidgetTest ${SOURCE_FILES} ${HEAD_FILES})
-target_link_libraries(WidgetTest PUBLIC
+add_executable(ButtonTest ${SOURCE_FILES} ${HEAD_FILES})
+target_link_libraries(ButtonTest PUBLIC
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets
@@ -23,13 +23,13 @@ target_link_libraries(WidgetTest PUBLIC
         MyBar_static
         MyButton_static
 )
-target_include_directories(WidgetTest PUBLIC
+target_include_directories(ButtonTest PUBLIC
         ${THIRD_PARTY}/MyListWidget/head
         ${THIRD_PARTY}/MyBar/head
         ${THIRD_PARTY}/MyButton/head
 )
 
-add_test(WidgetTest WidgetTest)
+add_test(ButtonTest ButtonTest)
 
 #####################################################
 

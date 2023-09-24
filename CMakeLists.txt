@@ -34,7 +34,8 @@ target_link_libraries(ClionWidget
 ###########################################################
 enable_testing()
 
-add_subdirectory(${PROJECT_SOURCE_DIR}/test/WidgetTest)
+#add_subdirectory(${PROJECT_SOURCE_DIR}/test/WidgetTest)
+add_subdirectory(${PROJECT_SOURCE_DIR}/test/ButtonTest)
 
 ###########################################################
 if (WIN32 AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
