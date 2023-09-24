@@ -41,10 +41,12 @@ public:
 
     void setState(const ButtonState& state) { _state = state; update();}
     void setContent(const MyButtonContent& content) { _content = content; update();}
-
+    qreal fontSize{20};
+    qreal fontWeight{10};
 private:
     ButtonState _state;
     MyButtonContent _content;
+    DataTimeRange _timeRange{OtherTime};
 };
 
 

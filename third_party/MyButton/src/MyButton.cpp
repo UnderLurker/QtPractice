@@ -15,7 +15,7 @@ MyButton::MyButton(QWidget *_p)
         : QPushButton(_p) {
     QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect;
     effect->setBlurRadius(70);
-    effect->setColor(Qt::black);
+    effect->setColor(Qt::gray);
     this->setGraphicsEffect(effect);
 }
 
@@ -26,23 +26,49 @@ void MyButton::paintEvent(QPaintEvent *event) {
     painter.setRenderHint(QPainter::Antialiasing);//反锯齿
     painter.save();
 
-    QLinearGradient bgLinear(0,0,0,QWidget::height());
-    QLinearGradient fontLiner(0,0,0,QWidget::height());
-    bgLinear.setColorAt(0.25,QColor("#90CBFB"));
-    bgLinear.setColorAt(0.9,QColor(Qt::white));
-    fontLiner.setColorAt(0.25,QColor(Qt::white));
-    fontLiner.setColorAt(0.9,QColor(Qt::black));
+    QLinearGradient otherBgLinear(0,0,0,QWidget::height());
+    QLinearGradient otherFontLiner(0,0,0,QWidget::height());
+    QLinearGradient rangeBgLinear(0,0,0,QWidget::height());
+    QLinearGradient timeLinear(0,0,0,QWidget::height());
+    otherBgLinear.setColorAt(0.25,QColor("#90CBFB"));
+    otherBgLinear.setColorAt(0.9,QColor(Qt::white));
+    otherFontLiner.setColorAt(0.25,QColor(Qt::white));
+    otherFontLiner.setColorAt(0.9,QColor(Qt::black));
+    rangeBgLinear.setColorAt(0.25,QColor("#A5AAA3"));
+    rangeBgLinear.setColorAt(0.9,QColor(Qt::white));
+    timeLinear.setColorAt(0.25,QColor("#3E4E69"));
+    timeLinear.setColorAt(0.9,QColor(Qt::white));
     if (state() == QEvent::MouseButtonPress) {
-        bgLinear.setColorAt(0.25,QColor("#FEA443"));
-        fontLiner.setColorAt(0.9,QColor("#FEA443"));
+        otherBgLinear.setColorAt(0.25,QColor("#FEA443"));
+        otherFontLiner.setColorAt(0.9,QColor("#FEA443"));
     }
-    QPen fontPen(fontLiner,40);
+    QPen fontPen(otherFontLiner,fontWeight);
     QPen radiusRectPen(Qt::NoBrush,0);
-    QFont textFont(tr("Consolas"),30,QFont::Bold);
+    QFont textFont(tr("Consolas"),fontSize,QFont::Bold);
+
+    switch (_timeRange) {
+        case OtherTime:{
+            painter.setBrush(otherBgLinear);
+            painter.setPen(radiusRectPen);
+            break;
+        }
+        case RangeTime:{
+            painter.setBrush(rangeBgLinear);
+            painter.setPen(radiusRectPen);
+            break;
+        }
+        case StartTime:
+        case EndTime:{
+            painter.setBrush(timeLinear);
+            painter.setPen(radiusRectPen);
+            break;
+        }
+        default:
+            break;
+    }
+
 
     //画背景
-    painter.setBrush(bgLinear);
-    painter.setPen(radiusRectPen);
     painter.drawPath(ButtonUtility::getRadiusRectPath(rect(),10,All));
     //画字体
     painter.setPen(fontPen);

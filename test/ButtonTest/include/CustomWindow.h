@@ -18,7 +18,6 @@ public:
     explicit CustomWindow(QWidget* _p = nullptr);
     ~CustomWindow() override;
 private:
-    MyButton *btn;
 };
 
 
