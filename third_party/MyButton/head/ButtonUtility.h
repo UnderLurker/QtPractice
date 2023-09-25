@@ -20,8 +20,17 @@ enum RadiusPos{
 class ButtonUtility {
 public:
     static QPainterPath getRadiusRectPath(const QRect& rect, int radius, int radiusPos);
+    static QPainterPath getRadiusRectPath(const QRect& rect,
+                                          int topLeftRadius,
+                                          int topRightRadius,
+                                          int bottomLeftRadius,
+                                          int bottomRightRadius,
+                                          int radiusPos);
 };
 
-
+class RectUtility{
+public:
+    static void paintShadow(QPainter* const painter, const QRect& rect, int radius);
+};
 
 #endif //!CLIONWIDGET_BUTTONUTILITY_H

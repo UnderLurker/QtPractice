@@ -17,6 +17,17 @@ enum DataTimeRange {
     OtherTime
 };
 
+enum PaintMarginMode{
+    Manual = 0,
+    TopLeft,
+    TopRight,
+    BottomLeft,
+    BottomRight,
+    HCenter,
+    VCenter,
+    Center
+};
+
 using ButtonState = QEvent::Type;
 
 struct MyButtonContent {
@@ -35,18 +46,39 @@ public:
 
     bool event(QEvent *e) override;
 
+signals:
+    void mouseClick(QString content);
+
 public:
     ButtonState state() const { return _state; }
     MyButtonContent content() const {return _content;}
+    QMargins paintMargin() const {return _margin;}
+    QSize paintSize() const {return _paintSize;}
+    PaintMarginMode marginMode() const {return _marginMode;}
+    int shadowRadius() const {return _shadowRadius;}
 
     void setState(const ButtonState& state) { _state = state; update();}
     void setContent(const MyButtonContent& content) { _content = content; update();}
-    qreal fontSize{20};
-    qreal fontWeight{10};
+    //用来设置内部有效内容区域margin
+    void setPaintMargin(const QMargins& margin);
+    void setPaintSize(QSize size);
+    void setMarginMode(PaintMarginMode mode) {_marginMode = mode;}
+    void setShadowRadius(int shadowRadius);
+
 private:
     ButtonState _state;
     MyButtonContent _content;
     DataTimeRange _timeRange{OtherTime};
+    QMargins _margin{0,0,0,0};
+    QRect _paintRect{rect()};
+    PaintMarginMode _marginMode{Manual};
+    QSize _paintSize{size()};
+    int _shadowRadius{0};
+public:
+    qreal fontSize{20};
+    qreal fontWeight{10};
+private:
+    void setContentsRect();
 };
 
 

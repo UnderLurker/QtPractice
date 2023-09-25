@@ -22,6 +22,8 @@ MyButton::MyButton(QWidget *_p)
 MyButton::~MyButton() = default;
 
 void MyButton::paintEvent(QPaintEvent *event) {
+    setContentsRect();
+
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);//反锯齿
     painter.save();
@@ -69,22 +71,113 @@ void MyButton::paintEvent(QPaintEvent *event) {
 
 
     //画背景
-    painter.drawPath(ButtonUtility::getRadiusRectPath(rect(),10,All));
+    painter.drawPath(ButtonUtility::getRadiusRectPath(_paintRect,10,All));
+    //画阴影
+//    RectUtility::paintShadow(&painter,_paintRect,10);
+
     //画字体
     painter.setPen(fontPen);
     painter.setFont(textFont);
-    painter.drawText(rect(),Qt::AlignCenter,_content.day);
+    painter.drawText(_paintRect,Qt::AlignCenter,_content.day);
 
     painter.restore();
 }
 
 bool MyButton::event(QEvent *e) {
-    if(e->type() == QEvent::MouseButtonPress ||
-        e->type() == QEvent::MouseButtonRelease ||
-        e->type() == QEvent::MouseButtonDblClick){
-        setState(e->type());
-        update();
-        return true;
+    bool res=false;
+    switch (e->type()) {
+        case QEvent::MouseButtonPress:{
+            auto *mouseEvent=(QMouseEvent*)e;
+            if(!_paintRect.contains(mouseEvent->pos()) &&
+               e->type() == QEvent::MouseButtonPress){
+                setState(QEvent::None);
+            }
+            else{
+                setState(e->type());
+                emit mouseClick(_content.day);
+            }
+            res=true;
+            break;
+        }
+        case QEvent::MouseButtonRelease:{
+            setState(e->type());
+            res=true;
+            break;
+        }
+        default:
+            res = QPushButton::event(e);
+            break;
     }
-    return QPushButton::event(e);
+    return res;
+}
+
+void MyButton::setPaintMargin(const QMargins& margin){
+    Q_ASSERT(_margin.top()+_margin.bottom()<rect().height()&&
+             _margin.left()+_margin.right()<rect().width());
+    _margin=margin;
+}
+
+void MyButton::setPaintSize(QSize size){
+    Q_ASSERT(size.width()<=QWidget::size().width()&&
+            size.height()<=QWidget::size().height());
+    _paintSize=size;
+}
+
+void MyButton::setShadowRadius(int shadowRadius) {
+    Q_ASSERT(shadowRadius>=0);
+    _shadowRadius = shadowRadius;
+}
+
+void MyButton::setContentsRect() {
+    switch (_marginMode) {
+        case Manual:{
+            _paintRect.setLeft(_margin.left());
+            _paintRect.setTop(_margin.top());
+            _paintRect.setWidth(QWidget::width()-_margin.left()-_margin.right());
+            _paintRect.setHeight(QWidget::height()-_margin.top()-_margin.bottom());
+            break;
+        }
+        case TopLeft:{
+            _paintRect.setLeft(0);
+            _paintRect.setTop(0);
+            _paintRect.setSize(_paintSize);
+            break;
+        }
+        case TopRight:{
+            _paintRect.setLeft(QWidget::width()-_paintSize.width());
+            _paintRect.setTop(0);
+            _paintRect.setSize(_paintSize);
+            break;
+        }
+        case BottomLeft:{
+            _paintRect.setLeft(0);
+            _paintRect.setTop(QWidget::height()-_paintSize.height());
+            _paintRect.setSize(_paintSize);
+            break;
+        }
+        case BottomRight:{
+            _paintRect.setLeft(QWidget::width()-_paintSize.width());
+            _paintRect.setTop(QWidget::height()-_paintSize.height());
+            _paintRect.setSize(_paintSize);
+            break;
+        }
+        case HCenter:{
+            _paintRect.setLeft((QWidget::width()-_paintSize.width())/2);
+            _paintRect.setTop(0);
+            _paintRect.setSize(_paintSize);
+            break;
+        }
+        case VCenter:{
+            _paintRect.setLeft(0);
+            _paintRect.setTop((QWidget::height()-_paintSize.height())/2);
+            _paintRect.setSize(_paintSize);
+            break;
+        }
+        case Center:{
+            _paintRect.setLeft((QWidget::width()-_paintSize.width())/2);
+            _paintRect.setTop((QWidget::height()-_paintSize.height())/2);
+            _paintRect.setSize(_paintSize);
+            break;
+        }
+    }
 }

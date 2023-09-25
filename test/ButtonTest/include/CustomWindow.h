@@ -9,8 +9,7 @@
 #include <QObject>
 #include <QMainWindow>
 #include <QMenuBar>
-#include "MyBar.h"
-#include "MyButton.h"
+#include "MyTableWidget.h"
 
 class CustomWindow : public QMainWindow{
     Q_OBJECT
@@ -18,6 +17,7 @@ public:
     explicit CustomWindow(QWidget* _p = nullptr);
     ~CustomWindow() override;
 private:
+    MyTableWidget *table;
 };
 
 

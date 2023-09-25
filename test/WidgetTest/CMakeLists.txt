@@ -2,9 +2,8 @@ cmake_minimum_required(VERSION 3.26)
 project(WidgetTest VERSION 0.1.0)
 set(HEAD_PATH ${PROJECT_SOURCE_DIR}/include)
 set(SRC_PATH ${PROJECT_SOURCE_DIR}/src)
-set(HEAD_FILES
-        ${HEAD_PATH}/CustomWindow.h
-)
+
+file(GLOB HEAD_FILES ${HEAD_PATH}/*.h)
 aux_source_directory(${SRC_PATH} SOURCE_FILES)
 
 
