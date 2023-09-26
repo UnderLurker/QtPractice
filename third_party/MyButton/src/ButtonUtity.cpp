@@ -5,6 +5,7 @@
 #include "ButtonUtility.h"
 #include <QPainter>
 #include <QtMath>
+#include <QDebug>
 
 QPainterPath ButtonUtility::getRadiusRectPath(const QRect &rect, int radius, int radiusPos) {
     return ButtonUtility::getRadiusRectPath(rect,radius,radius,radius,radius,radiusPos);
@@ -68,18 +69,19 @@ ButtonUtility::getRadiusRectPath(const QRect &rect, int topLeftRadius, int topRi
 }
 
 void RectUtility::paintShadow(QPainter* const painter, const QRect &rect, int radius) {
-    painter->save();
+    double a = rect.width()/2.0,b=rect.height()/2.0;
+    QRadialGradient shadowBrush(a + rect.left(),b + rect.top(), qSqrt(a*a+b*b));
+    shadowBrush.setColorAt(0,Qt::black);
+    shadowBrush.setColorAt(1,Qt::white);
+    QPen shadowPen(shadowBrush,radius);
 
-    QColor color(Qt::gray);
     for(int i=1;i<=radius;i++){
-        color.setAlpha(120 - qSqrt(i) * 40);
-        painter->setPen(color);
-        painter->drawRoundedRect(rect.topLeft().x()-i,
-                                 rect.topLeft().y()-i,
-                                 rect.width()+2*i,
-                                 rect.height()+2*i,
-                                 radius,radius);
+        painter->setPen(shadowPen);
+        painter->setBrush(QBrush(Qt::transparent));
+        QRect oneShadow(rect.topLeft().x()-i, rect.topLeft().y()-i,
+                        rect.width()+2*i, rect.height()+2*i);
+//        qDebug()<<"oneShadow"<<oneShadow;
+        painter->drawPath(ButtonUtility::getRadiusRectPath(oneShadow,10,All));
     }
 
-    painter->restore();
 }

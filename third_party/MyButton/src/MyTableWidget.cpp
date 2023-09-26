@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QHeaderView>
 #include <QPainter>
+#include <QApplication>
 
 const QStringList weeks={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 
@@ -17,6 +18,10 @@ const QStringList weeks={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 MyTableWidget::MyTableWidget(int row, int col, QWidget* _p)
     : QTableWidget(row,col,_p)
 {
+    startPos.row=0;
+    startPos.col=0;
+    endPos.row=0;
+    endPos.col=0;
     setHorizontalHeader(new MyHHeaderView(Qt::Horizontal));
     setHorizontalHeaderLabels(weeks);
     verticalHeader()->hide();
@@ -24,6 +29,7 @@ MyTableWidget::MyTableWidget(int row, int col, QWidget* _p)
     setShowGrid(false);
     setEditTriggers(QAbstractItemView::NoEditTriggers);
     setSelectionMode(QAbstractItemView::NoSelection);
+    setMouseTracking(true);
 
     QPalette p = this->palette();
     p.setColor(QPalette::Button,QColor(Qt::white));
@@ -43,15 +49,53 @@ MyTableWidget::MyTableWidget(int row, int col, QWidget* _p)
             btn->setContent(content);
             setCellWidget(r,c,btn);
 
-            connect(btn,&MyButton::mouseClick,this,[](QString content){
-                qDebug()<<"content: "<<content;
-            });
+            connect(btn,&MyButton::mouseClick,this,&MyTableWidget::contentClick);
         }
     }
 }
 
 MyTableWidget::~MyTableWidget(){
 
+}
+
+void MyTableWidget::contentClick(QPoint pos) {
+    clickCount=(clickCount+1)%2;
+    QPoint relativePos = pos - window()->pos() - this->pos();
+    relativePos.setY(relativePos.y()-horizontalHeader()->height()-style()->pixelMetric(QStyle::PM_TitleBarHeight));
+    auto model = this->indexAt(relativePos);
+    auto btn = (MyButton*)indexWidget(model);
+
+    if(clickCount == 1){
+        //修改按钮样式
+        for(int i=startPos.row;i<=endPos.row;i++){
+            for(int j=(i==startPos.row?startPos.col:0);j<=(i==endPos.row?endPos.col:(columnCount()-1));j++){
+                auto otherBtn = (MyButton*) cellWidget(i,j);
+                otherBtn->setTimeRange(OtherTime);
+                otherBtn->update();
+            }
+        }
+        startPos.row = model.row();
+        startPos.col = model.column();
+        endPos.row = 0;
+        endPos.col = 0;
+        btn->setTimeRange(StartTime);
+    }
+    else if(clickCount == 0){
+        endPos.row = model.row();
+        endPos.col = model.column();
+        if(endPos<startPos){
+            endPos.swap(startPos);
+        }
+        btn->setTimeRange(EndTime);
+        //修改按钮样式
+        for(int i=startPos.row;i<=endPos.row;i++){
+            for(int j=(i==startPos.row?startPos.col+1:0);j<=(i==endPos.row?endPos.col-1:(columnCount()-1));j++){
+                auto otherBtn = (MyButton*) cellWidget(i,j);
+                otherBtn->setTimeRange(RangeTime);
+                otherBtn->update();
+            }
+        }
+    }
 }
 
 /////////////////////////////////////////////////

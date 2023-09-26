@@ -47,7 +47,7 @@ public:
     bool event(QEvent *e) override;
 
 signals:
-    void mouseClick(QString content);
+    void mouseClick(QPoint pos);
 
 public:
     ButtonState state() const { return _state; }
@@ -56,6 +56,7 @@ public:
     QSize paintSize() const {return _paintSize;}
     PaintMarginMode marginMode() const {return _marginMode;}
     int shadowRadius() const {return _shadowRadius;}
+    DataTimeRange timeRange() const {return _timeRange;}
 
     void setState(const ButtonState& state) { _state = state; update();}
     void setContent(const MyButtonContent& content) { _content = content; update();}
@@ -64,6 +65,7 @@ public:
     void setPaintSize(QSize size);
     void setMarginMode(PaintMarginMode mode) {_marginMode = mode;}
     void setShadowRadius(int shadowRadius);
+    void setTimeRange(DataTimeRange timeRange){_timeRange=timeRange;}
 
 private:
     ButtonState _state;

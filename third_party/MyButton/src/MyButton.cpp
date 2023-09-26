@@ -16,7 +16,7 @@ MyButton::MyButton(QWidget *_p)
     QGraphicsDropShadowEffect *effect = new QGraphicsDropShadowEffect;
     effect->setBlurRadius(70);
     effect->setColor(Qt::gray);
-    this->setGraphicsEffect(effect);
+//    this->setGraphicsEffect(effect);
 }
 
 MyButton::~MyButton() = default;
@@ -73,7 +73,7 @@ void MyButton::paintEvent(QPaintEvent *event) {
     //画背景
     painter.drawPath(ButtonUtility::getRadiusRectPath(_paintRect,10,All));
     //画阴影
-//    RectUtility::paintShadow(&painter,_paintRect,10);
+    RectUtility::paintShadow(&painter,_paintRect,4);
 
     //画字体
     painter.setPen(fontPen);
@@ -94,7 +94,7 @@ bool MyButton::event(QEvent *e) {
             }
             else{
                 setState(e->type());
-                emit mouseClick(_content.day);
+                emit mouseClick(mouseEvent->globalPos());
             }
             res=true;
             break;
@@ -180,4 +180,5 @@ void MyButton::setContentsRect() {
             break;
         }
     }
+//    qDebug()<<"_paintRect:"<<_paintRect;
 }
