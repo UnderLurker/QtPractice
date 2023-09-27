@@ -31,8 +31,9 @@ enum PaintMarginMode{
 using ButtonState = QEvent::Type;
 
 struct MyButtonContent {
-    QString day;
-    QString description;
+    QString day{};
+    QString description{};
+    QString toString() const;
 };
 
 class MyButton : public QPushButton {

@@ -7,6 +7,7 @@
 
 #include <QWidget>
 #include <QObject>
+#include <QLabel>
 #include <QMainWindow>
 #include <QMenuBar>
 #include "MyTableWidget.h"
@@ -16,8 +17,13 @@ class CustomWindow : public QMainWindow{
 public:
     explicit CustomWindow(QWidget* _p = nullptr);
     ~CustomWindow() override;
+public slots:
+    void startTimeClick(MyButtonContent content);
+    void endTimeClick(MyButtonContent content);
 private:
     MyTableWidget *table;
+    QLabel *startTime;
+    QLabel *endTime;
 };
 
 

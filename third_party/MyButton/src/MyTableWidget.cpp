@@ -15,6 +15,20 @@ const QStringList weeks={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 #define TABLE_CELL_WIDTH 60
 #define TABLE_CELL_HEIGHT 60
 
+bool TablePos::operator<(const TablePos& p) const {
+    if(row==p.row)
+        return col<p.col;
+    return row<p.row;
+}
+
+void TablePos::swap(TablePos& p){
+    int rTemp=row,cTemp = col;
+    row=p.row;
+    col=p.col;
+    p.row=rTemp;
+    p.col=cTemp;
+}
+
 MyTableWidget::MyTableWidget(int row, int col, QWidget* _p)
     : QTableWidget(row,col,_p)
 {
@@ -64,6 +78,8 @@ void MyTableWidget::contentClick(QPoint pos) {
     relativePos.setY(relativePos.y()-horizontalHeader()->height()-style()->pixelMetric(QStyle::PM_TitleBarHeight));
     auto model = this->indexAt(relativePos);
     auto btn = (MyButton*)indexWidget(model);
+    if(btn == nullptr)
+        return;
 
     if(clickCount == 1){
         //修改按钮样式
@@ -79,6 +95,8 @@ void MyTableWidget::contentClick(QPoint pos) {
         endPos.row = 0;
         endPos.col = 0;
         btn->setTimeRange(StartTime);
+        emit startTimeClick(btn->content());
+        emit endTimeClick(MyButtonContent());
     }
     else if(clickCount == 0){
         endPos.row = model.row();
@@ -95,6 +113,7 @@ void MyTableWidget::contentClick(QPoint pos) {
                 otherBtn->update();
             }
         }
+        emit endTimeClick(btn->content());
     }
 }
 

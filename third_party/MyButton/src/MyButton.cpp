@@ -10,6 +10,9 @@
 #include <QGraphicsDropShadowEffect>
 #include <QDebug>
 
+QString MyButtonContent::toString() const {
+    return day;
+}
 
 MyButton::MyButton(QWidget *_p)
         : QPushButton(_p) {

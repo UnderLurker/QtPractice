@@ -10,22 +10,13 @@
 #include <QHeaderView>
 #include <QTableWidget>
 #include <functional>
+#include "MyButton.h"
 
 struct TablePos{
     int row;
     int col;
-    bool operator<(const TablePos& p) const {
-        if(row==p.row)
-            return col<p.col;
-        return row<p.row;
-    }
-    void swap(TablePos& p){
-        int rTemp=row,cTemp = col;
-        row=p.row;
-        col=p.col;
-        p.row=rTemp;
-        p.col=cTemp;
-    }
+    bool operator<(const TablePos& p) const;
+    void swap(TablePos& p);
 };
 
 class MyTableWidget : public QTableWidget {
@@ -33,6 +24,9 @@ class MyTableWidget : public QTableWidget {
 public:
     MyTableWidget(int row, int col, QWidget* _p = nullptr);
     ~MyTableWidget() override;
+signals:
+    void startTimeClick(MyButtonContent content);
+    void endTimeClick(MyButtonContent content);
 public slots:
     void contentClick(QPoint pos);
 private:
