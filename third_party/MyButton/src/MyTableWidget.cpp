@@ -12,8 +12,8 @@
 
 const QStringList weeks={"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 
-#define TABLE_CELL_WIDTH 60
-#define TABLE_CELL_HEIGHT 60
+#define TABLE_CELL_WIDTH 80
+#define TABLE_CELL_HEIGHT 80
 
 bool TablePos::operator<(const TablePos& p) const {
     if(row==p.row)
@@ -55,7 +55,7 @@ MyTableWidget::MyTableWidget(int row, int col, QWidget* _p)
             setColumnWidth(c,TABLE_CELL_WIDTH);
             auto *btn = new MyButton(this);
             btn->setFixedSize(TABLE_CELL_WIDTH,TABLE_CELL_HEIGHT);
-            btn->setPaintSize(QSize(50,50));
+            btn->setPaintSize(QSize(60,60));
             btn->setMarginMode(Center);
 
             MyButtonContent content;

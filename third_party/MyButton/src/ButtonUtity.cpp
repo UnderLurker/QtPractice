@@ -68,20 +68,68 @@ ButtonUtility::getRadiusRectPath(const QRect &rect, int topLeftRadius, int topRi
     return path;
 }
 
-void RectUtility::paintShadow(QPainter* const painter, const QRect &rect, int radius) {
-    double a = rect.width()/2.0,b=rect.height()/2.0;
-    QRadialGradient shadowBrush(a + rect.left(),b + rect.top(), qSqrt(a*a+b*b));
-    shadowBrush.setColorAt(0,Qt::black);
-    shadowBrush.setColorAt(1,Qt::white);
-    QPen shadowPen(shadowBrush,radius);
+void RectUtility::paintShadow(QPainter* const painter,const QRect& outRect) {
+    painter->save();
 
-    for(int i=1;i<=radius;i++){
-        painter->setPen(shadowPen);
-        painter->setBrush(QBrush(Qt::transparent));
-        QRect oneShadow(rect.topLeft().x()-i, rect.topLeft().y()-i,
-                        rect.width()+2*i, rect.height()+2*i);
-//        qDebug()<<"oneShadow"<<oneShadow;
-        painter->drawPath(ButtonUtility::getRadiusRectPath(oneShadow,10,All));
-    }
+    QPoint center(outRect.left()+int(outRect.width()/2),outRect.top()+int(outRect.height()/2));
+    QPen pen(QBrush(Qt::transparent),0);
+    painter->setPen(pen);
 
+    //top
+    QLinearGradient top(0,outRect.top(),0,(int)(outRect.height()/2));
+    top.setColorAt(0,QColor(Qt::white));
+    top.setColorAt(1,QColor(Qt::gray));
+
+    QPainterPath topPath;
+    topPath.moveTo(outRect.topLeft());
+    topPath.lineTo(outRect.topRight());
+    topPath.lineTo(center);
+    topPath.lineTo(outRect.topLeft());
+
+    painter->setBrush(top);
+    painter->drawPath(topPath);
+
+    //left
+    QLinearGradient left(outRect.left(),0,(int)(outRect.width()/2),0);
+    left.setColorAt(0,QColor(Qt::white));
+    left.setColorAt(1,QColor(Qt::gray));
+
+    QPainterPath leftPath;
+    leftPath.moveTo(outRect.topLeft());
+    leftPath.lineTo(center);
+    leftPath.lineTo(outRect.bottomLeft());
+    leftPath.lineTo(outRect.topLeft());
+
+    painter->setBrush(left);
+    painter->drawPath(leftPath);
+
+    //bottom
+    QLinearGradient bottom(0,outRect.bottom(),0,(int)(outRect.height()/2));
+    bottom.setColorAt(0,QColor(Qt::white));
+    bottom.setColorAt(1,QColor(Qt::gray));
+
+    QPainterPath bottomPath;
+    bottomPath.moveTo(outRect.bottomLeft());
+    bottomPath.lineTo(center);
+    bottomPath.lineTo(outRect.bottomRight());
+    bottomPath.lineTo(outRect.bottomLeft());
+
+    painter->setBrush(bottom);
+    painter->drawPath(bottomPath);
+
+    //bottom
+    QLinearGradient right(outRect.right(),0,(int)(outRect.width()/2),0);
+    right.setColorAt(0,QColor(Qt::white));
+    right.setColorAt(1,QColor(Qt::gray));
+
+    QPainterPath rightPath;
+    rightPath.moveTo(outRect.bottomRight());
+    rightPath.lineTo(center);
+    rightPath.lineTo(outRect.topRight());
+    rightPath.lineTo(outRect.bottomRight());
+
+    painter->setBrush(right);
+    painter->drawPath(rightPath);
+
+    painter->restore();
 }

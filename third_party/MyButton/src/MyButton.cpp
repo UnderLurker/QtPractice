@@ -73,10 +73,10 @@ void MyButton::paintEvent(QPaintEvent *event) {
     }
 
 
+    //画阴影
+    RectUtility::paintShadow(&painter,rect());
     //画背景
     painter.drawPath(ButtonUtility::getRadiusRectPath(_paintRect,10,All));
-    //画阴影
-    RectUtility::paintShadow(&painter,_paintRect,4);
 
     //画字体
     painter.setPen(fontPen);

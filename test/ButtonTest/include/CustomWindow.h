@@ -11,6 +11,7 @@
 #include <QMainWindow>
 #include <QMenuBar>
 #include "MyTableWidget.h"
+#include "MyHangWidget.h"
 
 class CustomWindow : public QMainWindow{
     Q_OBJECT
@@ -24,6 +25,7 @@ private:
     MyTableWidget *table;
     QLabel *startTime;
     QLabel *endTime;
+    MyHangWidget *widget;
 };
 
 

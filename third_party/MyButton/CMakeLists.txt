@@ -5,7 +5,7 @@ set(SRC_PATH ${PROJECT_SOURCE_DIR}/src)
 file(GLOB HEAD_FILES ${HEAD_PATH}/*.h)
 file(GLOB SOURCE_FILES ${SRC_PATH}/*.cpp)
 
-message(NOTICE "widget ${SOURCE_FILES} ${HEAD_FILES}")
+qt5_add_resources(SOURCE_FILES ${QRC_SOURCE_FILE})
 
 add_library(MyButton_static STATIC ${SOURCE_FILES} ${HEAD_FILES})
 target_link_libraries(MyButton_static PUBLIC

@@ -30,7 +30,7 @@ public:
 
 class RectUtility{
 public:
-    static void paintShadow(QPainter* const painter, const QRect& rect, int radius);
+    static void paintShadow(QPainter* const painter,const QRect& outRect);
 };
 
 #endif //!CLIONWIDGET_BUTTONUTILITY_H

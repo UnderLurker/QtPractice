@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/hang">
+        <file>Resources/hang/lighting.png</file>
+    </qresource>
+</RCC>

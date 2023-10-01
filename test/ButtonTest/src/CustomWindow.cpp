@@ -10,10 +10,10 @@
 
 CustomWindow::CustomWindow(QWidget* _p)
     : QMainWindow(_p){
-    resize(800,400);
+    resize(800,600);
 
     table = new MyTableWidget(5,7,this);
-    table->resize(800,400);
+    table->resize(800,600);
 
     startTime = new QLabel(this);
     startTime->resize(80,20);
@@ -27,6 +27,8 @@ CustomWindow::CustomWindow(QWidget* _p)
     connect(table,&MyTableWidget::startTimeClick,this,&CustomWindow::startTimeClick);
     connect(table,&MyTableWidget::endTimeClick,this,&CustomWindow::endTimeClick);
 
+    widget = new MyHangWidget;
+    widget->show();
 }
 
 CustomWindow::~CustomWindow(){
