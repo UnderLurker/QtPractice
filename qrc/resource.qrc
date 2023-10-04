@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/hang">
         <file>Resources/hang/lighting.png</file>
+        <file>Resources/hang/cpu.png</file>
+        <file>Resources/hang/memory.png</file>
     </qresource>
 </RCC>

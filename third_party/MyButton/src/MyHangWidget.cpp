@@ -13,127 +13,133 @@
 #include <QTimer>
 #include <QHostAddress>
 #include <QProcess>
-#include <windows.h>
 
 MyHangWidget::MyHangWidget(QWidget *_p) : QWidget(_p){
+    pos = QPoint();
     setWindowFlags(Qt::FramelessWindowHint | Qt::SubWindow);
     setAttribute(Qt::WA_TranslucentBackground); //不加这个会导致图片边缘有白边
     //强制初始化qrc资源，原因：本代码用于编译静态库，qt中资源文件若要编译就要生成一个cpp文件，需要这个宏
     Q_INIT_RESOURCE(resource);
-    pixmap = new QPixmap(":/hang/Resources/hang/lighting.png");
+    memoryImage = new QImage(":/hang/Resources/hang/memory.png");
+    cpuImage = new QImage(":/hang/Resources/hang/cpu.png");
     Q_CLEANUP_RESOURCE(resource);
 
     QScreen *screen = QGuiApplication::primaryScreen();
-    move(screen->availableGeometry().width()-pixmap->size().width()-100,100);
-    resize(pixmap->size());
-//    setMask(pixmap->mask());
-
-    table = new MyTableWidget(5,7);
-    table->resize(600,500);
-    table->hide();
-    table->setWindowFlags(Qt::FramelessWindowHint | Qt::SubWindow);
-
-    pos = QPoint();
+    move(screen->availableGeometry().width()-memoryImage->size().width()-100,100);
+    resize(250,100);
 
     timer = new QTimer(this);
     connect(timer,&QTimer::timeout,this,&MyHangWidget::timeOut);
     timer->start(1000);
-
-//    //socket
-//    tcpSocket = new QTcpSocket(this);
-//    tcpSocket->connectToHost("www.baidu.com",8888);
-//    connect(tcpSocket,&QTcpSocket::connected,this,&MyHangWidget::tcpConnected);
-//    connect(tcpSocket,&QTcpSocket::readyRead,this,&MyHangWidget::tcpReadyRead);
 }
 
 void MyHangWidget::paintEvent(QPaintEvent *event) {
+    QPen textPen(QBrush(Qt::black),10);
+    QFont textFont(tr("Consolas"),20,QFont::Bold);
+
     QPainter painter(this);
     painter.save();
 
-    //主背景
-    painter.drawPixmap(0,0,*pixmap);
+    QString mem=QString::number(memoryStatus.dwMemoryLoad);
+    QString cpu=QString::number(cpuLoad);
+    if(memoryStatus.dwMemoryLoad>100||memoryStatus.dwMemoryLoad<0){
+        mem = tr("0");
+    }
+    painter.drawImage(QRect(0,0,50,50),*memoryImage);
+    painter.drawImage(QRect(0,50,50,50),*cpuImage);
+    painter.setPen(textPen);
+    painter.setFont(textFont);
+    painter.drawText(QRectF(50,0,200,50),Qt::AlignVCenter,"MEM:"+mem+"%");
+    painter.drawText(QRectF(50,50,200,50),Qt::AlignVCenter,"CPU:"+cpu+"%");
 
     painter.restore();
 }
 
 MyHangWidget::~MyHangWidget() {
-    delete pixmap;
-    delete table;
+    timer->stop();
+    delete memoryImage;
+    delete cpuImage;
+    delete timer;
     delete tcpSocket;
 }
 
-void MyHangWidget::mousePressEvent(QMouseEvent *event) {
-    QWidget::mousePressEvent(event);
-    pos = event->globalPos()-geometry().topLeft();
-}
-
-void MyHangWidget::mouseMoveEvent(QMouseEvent *event) {
-    QWidget::mouseMoveEvent(event);
-    if(pos == QPoint())
-        return;
-    move(event->globalPos()-pos);
-}
-
-void MyHangWidget::mouseReleaseEvent(QMouseEvent *event) {
-    QWidget::mouseReleaseEvent(event);
-    pos = QPoint();
-}
-
 bool MyHangWidget::event(QEvent *event) {
-    QMouseEvent *mouseEvent = (QMouseEvent*)event;
+    auto *mouseEvent = (QMouseEvent*)event;
     switch (event->type()) {
-        case QEvent::Enter:{
-            state = event->type();
-            qDebug()<<window()->pos();
-            table->move(window()->pos().x()+20,window()->pos().y()+10);
-            table->show();
+        case QEvent::MouseButtonPress:{
+            pos = mouseEvent->globalPos()-geometry().topLeft();
             return true;
         }
-        case QEvent::Leave:{
-            state = event->type();
-            table->hide();
+        case QEvent::MouseMove:{
+            if(pos == QPoint())
+                return false;
+            move(mouseEvent->globalPos()-pos);
             return true;
         }
+        case QEvent::MouseButtonRelease:{
+            pos = QPoint();
+            return true;
+        }
+//        case QEvent::Enter:{
+//            state = event->type();
+//            table->move(window()->pos().x()+20,window()->pos().y()+10);
+//            table->show();
+//            return true;
+//        }
+//        case QEvent::Leave:{
+//            state = event->type();
+//            table->hide();
+//            return true;
+//        }
         default:
             break;
     }
     return QWidget::event(event);
 }
 
-void MyHangWidget::tcpConnected() {
-    qDebug()<<"baidu connected";
-
-    const char* str="GET / HTTP/1.1\nAccept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7\nAccept-Encoding: gzip, deflate, br\nAccept-Language: zh-CN,zh;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6,es;q=0.5\nCache-Control: max-age=0\nConnection: keep-alive\nSec-Fetch-Dest: document\nSec-Fetch-Mode: navigate\nSec-Fetch-Site: none\nSec-Fetch-User: ?1\nUpgrade-Insecure-Requests: 1\nUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.47\nsec-ch-ua: \"Microsoft Edge\";v=\"117\", \"Not;A=Brand\";v=\"8\", \"Chromium\";v=\"117\"\nsec-ch-ua-mobile: ?0\nsec-ch-ua-platform: Windows";
-    QByteArray arry(str);
-    arry.replace("\n","\r\n");
-    arry.append("\r\n");
-    tcpSocket->write(arry, arry.length());
+int64_t Filetime2Int64(const FILETIME &ftime)
+{
+    LARGE_INTEGER li;
+    li.LowPart = ftime.dwLowDateTime;
+    li.HighPart = ftime.dwHighDateTime;
+    return li.QuadPart;
 }
 
-void MyHangWidget::tcpReadyRead() {
-    QByteArray array = tcpSocket->readAll();
-//    QString str=QString::fromLocal8Bit(array);
-    qDebug()<<"array:"<<array;
-    tcpSocket->disconnect();
+int64_t CompareFileTime(const FILETIME& preTime,const FILETIME& nowTime){
+    return Filetime2Int64(nowTime) - Filetime2Int64(preTime);
 }
 
 void MyHangWidget::timeOut() {
-    MEMORYSTATUSEX memorystatus;
-    memorystatus.dwLength = sizeof(memorystatus);
-    if(GlobalMemoryStatusEx(&memorystatus)){
-        qDebug()<<memorystatus.dwMemoryLoad<<"%";
-    }
-    else{
+    FILETIME idleTime;
+    FILETIME kernelTime;
+    FILETIME userTime;
+    GetSystemTimes(&idleTime,&kernelTime,&userTime);
+
+    auto idle = CompareFileTime(preIdleTime, idleTime);
+    auto kernel = CompareFileTime(preKernelTime, kernelTime);
+    auto user = CompareFileTime(preUserTime, userTime);
+
+    if (kernel + user == 0)
+        cpuLoad = 0;
+
+    cpuLoad = int(1000.0*(kernel + user - idle) / (kernel + user))/10.0;
+
+    preIdleTime = idleTime;
+    preKernelTime = kernelTime;
+    preUserTime = userTime;
+
+    memoryStatus.dwLength = sizeof(memoryStatus);
+    if(!GlobalMemoryStatusEx(&memoryStatus)){
         qDebug()<<"通过windows获取信息失败";
     }
+    update();
+//    QProcess cpuProcess;
+//    cpuProcess.start("wmic cpu get Name");
+//    cpuProcess.waitForFinished();
+//    qDebug()<<cpuProcess.readAllStandardOutput().replace("\r","").replace("\n","");
 
-    QProcess cpuProcess;
-    cpuProcess.start("wmic cpu get Name");
-    cpuProcess.waitForFinished();
-    qDebug()<<cpuProcess.readAllStandardOutput().replace("\r","").replace("\n","");
-
-    QProcess gpuProcess;
-    cpuProcess.start("wmic path win32_VideoController get Name");
-    cpuProcess.waitForFinished();
-    qDebug()<<cpuProcess.readAllStandardOutput().replace("\r","").replace("\n","");
+//    QProcess gpuProcess;
+//    cpuProcess.start("wmic path win32_VideoController get Name");
+//    cpuProcess.waitForFinished();
+//    qDebug()<<cpuProcess.readAllStandardOutput().replace("\r","").replace("\n","");
 }
