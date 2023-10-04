@@ -9,6 +9,10 @@
 #include <QObject>
 #include <QPixmap>
 #include <QPoint>
+#include <QEvent>
+#include "MyTableWidget.h"
+#include <QTcpSocket>
+
 
 class MyHangWidget : public QWidget {
     Q_OBJECT
@@ -19,9 +23,18 @@ public:
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
+    bool event(QEvent *event) override;
+public slots:
+    void tcpConnected();
+    void tcpReadyRead();
+    void timeOut();
 private:
     QPixmap *pixmap;
     QPoint pos;
+    QEvent::Type state;
+    MyTableWidget *table;
+    QTcpSocket *tcpSocket;
+    QTimer *timer;
 };
 
 

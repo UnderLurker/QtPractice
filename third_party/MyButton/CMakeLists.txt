@@ -12,6 +12,7 @@ target_link_libraries(MyButton_static PUBLIC
         Qt5::Core
         Qt5::Gui
         Qt5::Widgets
+        Qt5::Network
 )
 target_include_directories(MyButton_static PRIVATE
         ${HEAD_PATH})
