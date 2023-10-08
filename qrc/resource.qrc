@@ -3,5 +3,7 @@
         <file>Resources/hang/lighting.png</file>
         <file>Resources/hang/cpu.png</file>
         <file>Resources/hang/memory.png</file>
+        <file>Resources/hang/up.png</file>
+        <file>Resources/hang/down.png</file>
     </qresource>
 </RCC>

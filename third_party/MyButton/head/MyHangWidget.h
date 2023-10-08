@@ -12,6 +12,7 @@
 #include <QTcpSocket>
 #include <QImage>
 #include <windows.h>
+#include "NetworkTraffic.h"
 
 
 class MyHangWidget : public QWidget {
@@ -22,19 +23,24 @@ public:
     void paintEvent(QPaintEvent *event) override;
     bool event(QEvent *event) override;
 public slots:
-    void timeOut();
+    void MemTimeOut();
+    void NetTimeOut();
 private:
     QPoint pos;
     QEvent::Type state;
     QTcpSocket *tcpSocket;
     QTimer *timer;
+    QTimer *netTimer;
     QImage *cpuImage;
     QImage *memoryImage;
+    QImage *upImage;
+    QImage *downImage;
     MEMORYSTATUSEX memoryStatus;
     double cpuLoad{0};
     FILETIME preIdleTime;
     FILETIME preKernelTime;
     FILETIME preUserTime;
+    NetworkTraffic traffic;
 };
 
 

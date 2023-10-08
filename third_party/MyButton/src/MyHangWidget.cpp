@@ -22,15 +22,20 @@ MyHangWidget::MyHangWidget(QWidget *_p) : QWidget(_p){
     Q_INIT_RESOURCE(resource);
     memoryImage = new QImage(":/hang/Resources/hang/memory.png");
     cpuImage = new QImage(":/hang/Resources/hang/cpu.png");
+    upImage = new QImage(":/hang/Resources/hang/up.png");
+    downImage = new QImage(":/hang/Resources/hang/down.png");
     Q_CLEANUP_RESOURCE(resource);
 
     QScreen *screen = QGuiApplication::primaryScreen();
     move(screen->availableGeometry().width()-memoryImage->size().width()-100,100);
-    resize(250,100);
+    resize(250,200);
 
     timer = new QTimer(this);
-    connect(timer,&QTimer::timeout,this,&MyHangWidget::timeOut);
+    netTimer = new QTimer(this);
+    connect(timer,&QTimer::timeout,this,&MyHangWidget::MemTimeOut);
+    connect(netTimer,&QTimer::timeout,this,&MyHangWidget::NetTimeOut);
     timer->start(1000);
+    netTimer->start(1000);
 }
 
 void MyHangWidget::paintEvent(QPaintEvent *event) {
@@ -45,12 +50,17 @@ void MyHangWidget::paintEvent(QPaintEvent *event) {
     if(memoryStatus.dwMemoryLoad>100||memoryStatus.dwMemoryLoad<0){
         mem = tr("0");
     }
+
     painter.drawImage(QRect(0,0,50,50),*memoryImage);
     painter.drawImage(QRect(0,50,50,50),*cpuImage);
+    painter.drawImage(QRect(0,100,50,50),*upImage);
+    painter.drawImage(QRect(0,150,50,50),*downImage);
     painter.setPen(textPen);
     painter.setFont(textFont);
     painter.drawText(QRectF(50,0,200,50),Qt::AlignVCenter,"MEM:"+mem+"%");
     painter.drawText(QRectF(50,50,200,50),Qt::AlignVCenter,"CPU:"+cpu+"%");
+    painter.drawText(QRectF(50,100,200,50),Qt::AlignVCenter,traffic.netUp+"K/s");
+    painter.drawText(QRectF(50,150,200,50),Qt::AlignVCenter,traffic.netDown+"K/s");
 
     painter.restore();
 }
@@ -109,7 +119,7 @@ int64_t CompareFileTime(const FILETIME& preTime,const FILETIME& nowTime){
     return Filetime2Int64(nowTime) - Filetime2Int64(preTime);
 }
 
-void MyHangWidget::timeOut() {
+void MyHangWidget::MemTimeOut() {
     FILETIME idleTime;
     FILETIME kernelTime;
     FILETIME userTime;
@@ -133,6 +143,7 @@ void MyHangWidget::timeOut() {
         qDebug()<<"通过windows获取信息失败";
     }
     update();
+    {
 //    QProcess cpuProcess;
 //    cpuProcess.start("wmic cpu get Name");
 //    cpuProcess.waitForFinished();
@@ -142,4 +153,10 @@ void MyHangWidget::timeOut() {
 //    cpuProcess.start("wmic path win32_VideoController get Name");
 //    cpuProcess.waitForFinished();
 //    qDebug()<<cpuProcess.readAllStandardOutput().replace("\r","").replace("\n","");
+    }
+}
+
+void MyHangWidget::NetTimeOut() {
+    traffic.update();
+    update();
 }
