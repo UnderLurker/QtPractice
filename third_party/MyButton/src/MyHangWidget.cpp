@@ -16,7 +16,7 @@
 
 MyHangWidget::MyHangWidget(QWidget *_p) : QWidget(_p){
     pos = QPoint();
-    setWindowFlags(Qt::FramelessWindowHint | Qt::SubWindow);
+    setWindowFlags(Qt::FramelessWindowHint | Qt::SubWindow | Qt::WindowStaysOnTopHint);
     setAttribute(Qt::WA_TranslucentBackground); //不加这个会导致图片边缘有白边
     //强制初始化qrc资源，原因：本代码用于编译静态库，qt中资源文件若要编译就要生成一个cpp文件，需要这个宏
     Q_INIT_RESOURCE(resource);

@@ -7,6 +7,7 @@
 #define DEFAULT_BUFFER_SIZE 40960L
 
 NetworkTraffic::NetworkTraffic() {
+//    testAllRegedit();
     getInstance();
 }
 
@@ -72,7 +73,7 @@ vector<double> NetworkTraffic::getTraffic(TrafficType _type) {
 
     uint32 type;
     uint32 ret;
-    uint32 size = DEFAULT_BUFFER_SIZE;
+    uint32 size = 0;
     auto *data = new uint8_t[size];
 
     //获取的是下面的宏Counter
@@ -132,4 +133,54 @@ void NetworkTraffic::update(int index){
     auto res2 = getTraffic(OutGoingTraffic);
     netDown = QString::number(((int)(res1[index]*100/1000.0))/100.0);
     netUp = QString::number(((int)(res2[index]*100/1000.0))/100.0);
+}
+
+void NetworkTraffic::testAllRegedit() {
+    uint32 type;
+    uint32 ret;
+    uint32 size = DEFAULT_BUFFER_SIZE;
+    auto *data = new uint8_t[size];
+
+    //获取的是下面的宏Counter
+    //计算机\HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Perflib\CurrentLanguage
+    while((ret = RegQueryValueEx(HKEY_PERFORMANCE_DATA,"510",nullptr,&type,data,&size))!=ERROR_SUCCESS){
+        if(ret == ERROR_MORE_DATA){
+            size += DEFAULT_BUFFER_SIZE;
+            delete [] data;
+            data = new uint8_t [size];
+        }
+    }
+
+    auto* dataBlock = (PERF_DATA_BLOCK*)data;
+    auto* objectType = (PERF_OBJECT_TYPE*)((uint8_t *)dataBlock+dataBlock->HeaderLength);
+    //循环遍历后续PERF_OBJECT_TYPE
+    for(int i=0;i<dataBlock->NumObjectTypes;i++){
+        qDebug()<<(int)objectType->ObjectNameTitleIndex;
+        {
+            vector<CounterOffset> offsets;
+            auto* counterDefinition = (PERF_COUNTER_DEFINITION*)((uint8_t *)objectType+objectType->HeaderLength);
+            for(int j=0;j<objectType->NumCounters;j++){
+                CounterOffset counterOffset{};
+                counterOffset.offset = counterDefinition->CounterOffset;
+                counterOffset.nameIndex = counterDefinition->CounterNameTitleIndex;
+                offsets.emplace_back(counterOffset);
+
+                counterDefinition = (PERF_COUNTER_DEFINITION*)((uint8_t *)counterDefinition + counterDefinition->ByteLength);
+            }
+            auto* instanceDefinition = (PERF_INSTANCE_DEFINITION*)((uint8_t *)objectType + objectType->DefinitionLength);
+            for(int j=0;j<objectType->NumInstances;j++){
+                auto* inName = (wchar_t *)((uint8_t *)instanceDefinition + instanceDefinition->NameOffset);
+                auto *counterBlock = (PERF_COUNTER_BLOCK *)((uint8_t *)instanceDefinition + instanceDefinition->ByteLength);
+
+                qDebug()<<"name:"<<wstring(inName);
+                for(CounterOffset item : offsets){
+//                    qDebug()<<"nameIndex:"<<item.nameIndex<<"\tvalue:"<<*(uint32*)((uint8_t*)counterBlock+item.offset);
+                }
+
+                instanceDefinition = (PERF_INSTANCE_DEFINITION*) ((uint8_t *)instanceDefinition + instanceDefinition->ByteLength + counterBlock->ByteLength);
+            }
+        }
+        objectType = (PERF_OBJECT_TYPE*)((uint8_t*)objectType+objectType->TotalByteLength);
+    }
+    delete [] data;
 }

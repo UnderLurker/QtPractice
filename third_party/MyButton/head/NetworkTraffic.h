@@ -12,6 +12,13 @@
 
 using namespace std;
 
+struct CounterOffset{
+private:
+    using uint32 = unsigned long;
+public:
+    uint32 nameIndex;
+    uint32 offset;
+};
 
 //获取流量类型
 enum TrafficType{
@@ -27,6 +34,7 @@ public:
     ~NetworkTraffic() = default;
     vector<double> getTraffic(TrafficType _type);
     void update(int index = 0);
+    void testAllRegedit();
 private:
     vector<wstring> InterfaceName;//PERF_INSTANCE_DEFINITION后面的名字
     vector<uint32> BandWidth;
